@@ -1,0 +1,1 @@
+<% response.sendRedirect("../layout/index.action"); %>

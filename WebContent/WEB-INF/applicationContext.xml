@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+
+	 <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	   <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+	   <property name="url" value="jdbc:mysql://localhost:3306/eh100?generateSimpleParameterMetadata=true&amp;userCursorFetch=true&amp;useOldAliasMetadataBehavior=true"/>
+	   <property name="username" value="root"/>
+	   <property name="password" value="123456"/>
+	 </bean>
+
+
+  <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+    <property name="dataSource" ref="dataSource"/>
+    <property name="mappingResources">
+      <list>
+        <value>BookVo.hbm.xml</value>
+        <value>userVo.hbm.xml</value>
+        <value>BookMenuVo.hbm.xml</value>
+      </list>
+    </property>
+    <property name="hibernateProperties">
+      <value>
+        hibernate.dialect=org.hibernate.dialect.MySQLDialect
+      </value>
+    </property>
+  </bean>
+
+
+
+	<bean id="bookDao" class="com.eh100.dao.book.BookDaoImpl" >
+
+		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="compassTemplate" ref="compassTemplate"/>
+		<property name="compass" ref="compass"/>
+
+	</bean>
+	
+	
+
+	<bean id="bookService" class="com.eh100.service.book.BookServiceImpl" >
+
+		<property name="bookDao" ref="bookDao"/>
+	</bean>
+	
+	
+
+
+	<bean id="latestBookMenuAction" class="com.eh100.web.book.LatestBookMenuAction" scope="prototype">
+
+		<property name="bookService" ref="bookService"/>
+	</bean>
+
+	<bean id="latestBookAction" class="com.eh100.web.book.LatestBookAction" scope="prototype">
+
+		<property name="bookService" ref="bookService"/>
+	</bean>
+	
+	
+	<bean id="flusher" class="com.engin.FlusherImpl" >
+
+		<property name="dataSource" ref="dataSource"/>
+		<property name="bookDao" ref="bookDao"/>
+		
+	   <property name="compassGps" ref="compassGps" />
+	 
+	   
+	</bean>
+	
+	
+	<bean id="ehScanner" class="com.engin.EhScanner">
+			<property name="flusher" ref="flusher"/>
+			 <property name="compassGps" ref="compassGps" />
+			   <property name="jdbcGpsDevice" ref="jdbcGpsDevice" />
+			 
+			 
+	</bean>
+	
+
+	
+	<bean id="goAction" class="com.eh100.web.book.GoAction" scope="prototype">
+
+	</bean>
+	
+	
+	<bean id="bookDirectoryManagementAction" class="com.eh100.web.book.BookDirectoryManagementAction" scope="prototype">
+		<property name="bookService" ref="bookService"/>
+		<property name="adminService" ref="adminService"/>
+	</bean>
+ 
+ 
+  
+<task:scheduled-tasks scheduler="myScheduler">
+      <task:scheduled ref="ehScanner" method="runLatestBook" fixed-rate="5000000"/>
+    <task:scheduled ref="ehScanner" method="runHotBook" fixed-rate="10000000"/>
+ 
+</task:scheduled-tasks>
+ 
+<task:scheduler id="myScheduler" />
+ 
+   
+
+	
+	
+</beans>

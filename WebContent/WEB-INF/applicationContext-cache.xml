@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="oscacheFacade"
+		class="org.springmodules.cache.provider.oscache.OsCacheFacade">
+		<property name="failQuietlyEnabled" value="true" />
+		<property name="cacheManager">
+			<bean id="oscacheManager"
+				class="org.springmodules.cache.provider.oscache.OsCacheManagerFactoryBean">
+				<property name="configLocation"
+					value="classpath:oscache.properties" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="cachingListener"
+		class="com.eh100.cache.common.SpringModulesCachingListener" />
+
+	<bean id="cachingInterceptor"
+		class="org.springmodules.cache.interceptor.caching.MethodMapCachingInterceptor">
+		<property name="cacheProviderFacade" ref="oscacheFacade" />
+		<property name="cachingListeners">
+			<list>
+				<ref bean="cachingListener" />
+			</list>
+		</property>
+		<property name="cachingModels">
+			<map>
+				<entry
+					key="com.eh100.dao.book.BookDao.loadBooks*">
+					<ref local="oscacheCachingModel" />
+				</entry>
+
+				<entry
+					key="com.eh100.dao.book.BookDao.getHotBookByBookNames*">
+					<ref local="oscacheCachingModel" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+
+	<bean id="oscacheCachingModel"
+		class="org.springmodules.cache.provider.oscache.OsCacheCachingModel">
+		<property name="groups">
+			<list>
+				<value>eh100-book</value>
+			</list>
+		</property>
+		<property name="refreshPeriod" value="1000" />
+	</bean>
+
+
+
+	<bean id="oscacheFlushingModel"
+		class="org.springmodules.cache.provider.oscache.OsCacheFlushingModel">
+		<property name="groups">
+			<list>
+				<value>eh100-book</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="flushingInterceptor"
+		class="org.springmodules.cache.interceptor.flush.MethodMapFlushingInterceptor">
+		<property name="cacheProviderFacade" ref="oscacheFacade" />
+		<property name="flushingModels">
+			<map>
+
+				<entry
+					key="com.engin.Flusher.generateStaticHtmls">
+					<ref local="oscacheFlushingModel" />
+				</entry>
+
+			</map>
+		</property>
+	</bean>
+
+
+	<bean
+		class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		<property name="beanNames">
+			<list>
+				<value>flusher</value>  
+				<value>bookDao</value>  
+
+	
+		
+			</list>
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>cachingInterceptor</value>
+				<value>flushingInterceptor</value>
+			</list>
+		</property>
+	</bean>
+
+</beans>

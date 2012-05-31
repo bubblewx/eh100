@@ -1,0 +1,25 @@
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+<hibernate-mapping package="com.eh100.entity">
+	<class name="UserVo" table="teh100_user">
+		<id name="id" column="id" type="java.lang.Long">
+			<generator class="identity" />
+		</id>
+		<property name="userId" column="userId" type="java.lang.String"
+			not-null="false" />
+		<property name="userName" column="userName" type="java.lang.String"
+			not-null="false" />
+		<property name="passWord" column="passWord" type="java.lang.String"
+			not-null="false" />
+		<property name="email" column="email" type="java.lang.String"
+			not-null="false" />
+			
+		<property name="bookIdReaded" column="bookIdReaded" type="java.lang.String"
+			not-null="false" />
+		<property name="createDate" column="createDate" type="java.util.Date"
+			not-null="false" />
+		<set name="bookMenuVos" table="teh100_userBookMenu" lazy="false">
+			<key column="userId" />
+			<many-to-many column="bookMenuId" class="com.eh100.entity.BookMenuVo" />
+		</set>
+	</class>
+</hibernate-mapping>

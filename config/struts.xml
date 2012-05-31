@@ -1,0 +1,111 @@
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<include file="struts-default.xml" />
+	<package name="book" extends="struts-default" namespace="/book">
+		<action name="LatestBook" class="latestBookAction" method="execute">
+			<result name="success">latestBook.jsp</result>
+
+			<result  name="successForHotBook">static.jsp</result>
+			
+			<result name="menu">bookMenu.jsp</result>
+			
+		</action>
+		
+		
+		<action name="BookMenu" class="latestBookAction" method="loadMenusByBookAndSite">
+			<result name="menu">bookMenu.jsp</result>
+			<result  name="successForHotBook">static.jsp</result>
+			
+		</action>
+		
+		
+		<action name="LatestBookMenu" class="latestBookMenuAction"
+			method="execute">
+			<result name="success">latestBookMenu.jsp</result>
+		</action>
+		
+		
+		<action name="LatestBookReadedMenu" class="latestBookMenuAction"
+			method="latestReadBook">
+			<result name="success">latestReadBook.jsp</result>
+		</action>
+		
+		
+		<action name="BookDirectoryDeleteSave" class="bookDirectoryManagementAction"
+			method="deleteBooksFromDirectory">
+			<result name="input" type="redirectAction">
+				<param name="actionName">BookDirectory</param>
+			
+			</result>
+			<result name="login" type="redirectAction">
+				<param name="actionName">LoginSystem</param>
+				<param name="namespace">/common</param>
+			</result>
+			
+		</action>
+		
+		
+				
+		<action name="BookDirectory" class="bookDirectoryManagementAction"
+			method="list">
+			<result name="input">bookDirectoryManage.jsp</result>
+			<result name="login" type="redirectAction">
+				<param name="actionName">LoginSystem</param>
+				<param name="namespace">/common</param>
+			</result>
+			
+		</action>
+		
+		
+		<action name="BookDirectoryAddSave" class="bookDirectoryManagementAction"
+			method="addBooksToDirectory">
+
+			<result name="input" type="redirectAction">
+				<param name="actionName">BookDirectory</param>
+			
+			</result>
+			
+			<result name="login" type="redirectAction">
+				<param name="actionName">LoginSystem</param>
+				<param name="namespace">/common</param>
+			</result>
+			
+		</action>
+		
+		
+	</package>
+	<package name="common" extends="struts-default" namespace="/common">
+		<action name="LoginSystem" class="loginAction" method="save">
+			<result name="success" type="redirectAction">
+				<param name="actionName">LatestBookMenu</param>
+				<param name="namespace">/book</param>
+			</result>
+			<result name="input">/common/login/login.jsp
+			</result>
+		</action>
+		<action name="go" class="goAction" method="execute">
+			<result name="success" type="redirect">${target}</result>
+		</action>
+		<action name="ShowLogin" class="loginAction" method="list">
+			<result name="input">/common/login/login.jsp
+			</result>
+		</action>
+		<action name="checkName" class="registerAction" method="remoteCheck">
+			<result type="stream">
+				<param name="inputName">inputStream</param>
+				<!--
+					默认就为inputStream
+				-->
+			</result>
+		</action>
+		<action name="ShowRegistration" class="registerAction" method="list">
+			<result name="input">/common/registration/registration.jsp
+			</result>
+		</action>
+		<action name="registration" class="registerAction" method="save">
+			<result name="success" type="chain">ShowLogin</result>
+		</action>
+	</package>
+</struts>

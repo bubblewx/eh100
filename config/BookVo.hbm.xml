@@ -1,0 +1,27 @@
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+<hibernate-mapping package="com.eh100.entity">
+	<class name="BookVo" table="teh100_book_running">
+		<id name="id" column="id" type="java.lang.Long">
+			<generator class="native" />
+		</id>
+		<property name="bookName" column="bookName" type="java.lang.String"
+			not-null="false" />
+		<property name="author" column="author" type="java.lang.String"
+			not-null="false" />
+		<property name="chapterName" column="chapter" type="java.lang.String"
+			not-null="false" />
+		<property name="chapterUrl" column="chapterUrl" type="java.lang.String"
+			not-null="false" />
+		<property name="targetSiteUrl" column="targetSiteUrl" type="java.lang.String"
+			not-null="false" />
+			
+		<property name="targetSiteName" column="targetSiteName" type="java.lang.String"
+			not-null="false" />
+		<property name="createDate" column="createDate" type="java.util.Date"
+			not-null="false" />
+			
+		<property name="orderSequence" column="orderSequence" type="java.lang.String"
+			not-null="false" />	
+			
+	</class>
+</hibernate-mapping>
